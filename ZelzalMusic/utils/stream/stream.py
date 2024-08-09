@@ -9,7 +9,7 @@ from typing import Union
 from pyrogram.types import InlineKeyboardMarkup
 
 import config
-from ZelzalMusic import Carbon, YouTube, app
+from ZelzalMusic import Carbon, YouTube, YTB, app
 from ZelzalMusic.core.call import Zelzaly
 from ZelzalMusic.misc import db
 from ZelzalMusic.utils.database import add_active_video_chat, is_active_chat
@@ -18,7 +18,7 @@ from ZelzalMusic.utils.inline import aq_markup, close_markup, stream_markup
 from ZelzalMusic.utils.pastebin import ZelzalyBin
 from ZelzalMusic.utils.stream.queue import put_queue, put_queue_index
 from ZelzalMusic.utils.thumbnails import get_thumb
-import os, requests
+
 
 async def stream(
     _,
@@ -82,7 +82,12 @@ async def stream(
                         vidid, mystic, video=status, videoid=True
                     )
                 except:
-                    raise AssistantErr(_["play_14"])
+                    try:
+                        file_path, direct = await YTB.download(
+                            vidid, mystic, video=status, videoid=True
+                        )
+                    except:
+                        raise AssistantErr(_["play_14"])
                 await Zelzaly.join_call(
                     chat_id,
                     original_chat_id,
@@ -146,7 +151,12 @@ async def stream(
                 vidid, mystic, videoid=True, video=status
             )
         except:
-            raise AssistantErr(_["play_14"])
+            try:
+                file_path, direct = await YTB.download(
+                    vidid, mystic, videoid=True, video=status
+                )
+            except:
+                raise AssistantErr(_["play_14"])
         if await is_active_chat(chat_id):
             await put_queue(
                 chat_id,
