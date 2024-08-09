@@ -21,7 +21,7 @@ from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQuality
 from pytgcalls.types.stream import StreamAudioEnded
 
 import config
-from ZelzalMusic import LOGGER, YouTube, app
+from ZelzalMusic import LOGGER, YouTube, app, YTB
 from ZelzalMusic.misc import db
 from ZelzalMusic.utils.database import (
     add_active_chat,
@@ -41,8 +41,6 @@ from ZelzalMusic.utils.inline.play import stream_markup
 from ZelzalMusic.utils.stream.autoclear import auto_clean
 from ZelzalMusic.utils.thumbnails import get_thumb
 from strings import get_string
-import os, requests
-
 
 autoend = {}
 counter = {}
@@ -422,9 +420,17 @@ class Call(PyTgCalls):
                         video=True if str(streamtype) == "video" else False,
                     )
                 except:
-                    return await mystic.edit_text(
-                        _["call_6"], disable_web_page_preview=True
-                    )
+                    try:
+                        file_path, direct = await YTB.download(
+                            videoid,
+                            mystic,
+                            videoid=True,
+                            video=True if str(streamtype) == "video" else False,
+                        )
+                    except:
+                        return await mystic.edit_text(
+                            _["call_6"], disable_web_page_preview=True
+                        )
                 if video:
                     stream = AudioVideoPiped(
                         file_path,
