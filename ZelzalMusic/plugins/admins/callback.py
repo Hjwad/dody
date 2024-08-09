@@ -7,7 +7,7 @@ import asyncio
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from ZelzalMusic import YouTube, app
+from ZelzalMusic import YouTube, app, YTB
 from ZelzalMusic.core.call import Zelzaly
 from ZelzalMusic.misc import SUDOERS, db
 from ZelzalMusic.utils.database import (
@@ -256,7 +256,15 @@ async def del_back_playlist(client, CallbackQuery, _):
                     video=status,
                 )
             except:
-                return await mystic.edit_text(_["call_6"])
+                try:
+                    file_path, direct = await YTB.download(
+                        videoid,
+                        mystic,
+                        videoid=True,
+                        video=status,
+                    )
+                except:
+                    return await mystic.edit_text(_["call_6"])
             try:
                 image = await YouTube.thumbnail(videoid, True)
             except:
